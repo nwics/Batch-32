@@ -45,6 +45,8 @@ public class challenge1Day01 {
         System.out.println();
         System.out.print("soal no 4 " + "-".repeat(100));
         System.out.println();
+
+        // soal no 4
         for (int i = 0; i < num; i++) {
             for (int j = 0; j < num; j++) {
                 if (i <= j) {
@@ -66,9 +68,9 @@ public class challenge1Day01 {
                     System.out.print((i + 1) + "\t");
                 } else if (i < j) {
 
-                    System.out.print("10\t");
+                    System.out.print("10" + "\t");
                 } else {
-                    System.out.print("20\t");
+                    System.out.print("20" + "\t");
                 }
             }
             System.out.println();

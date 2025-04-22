@@ -8,7 +8,8 @@ public class challenge2Day01 {
         System.out.println("isPalindrome : " + isPalindrome(121));
         System.out.println("Capitalize : " + Capitalize("belajar java"));
         System.out.println("IsNoDuplicateChar : " + IsNoDuplicateChar("abccc"));
-        System.out.println("IsBrace : " + IsBrace("(())"));
+        System.out.println("IsBrace : " + IsBrace("()(())"));
+
     }
 
     /*
@@ -55,14 +56,14 @@ public class challenge2Day01 {
         String[] s = input.split(" ");
         String result = "";
         for (int i = 0; i < s.length; i++) {
-            String capital = s[i].substring(0, 1).toUpperCase() + s[i].substring(1);
-            result += capital;
+            String str = s[i].substring(0, 1).toUpperCase() + s[i].substring(1);
+            result += str;
 
             if (i < s.length - 1) {
                 result += " ";
             }
         }
-        return result;
+        return result.trim();
     }
 
     /*
@@ -93,19 +94,11 @@ public class challenge2Day01 {
      */
 
     public static boolean IsBrace(String s) {
-        int n = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == '(') {
-                n++;
-            } else if (s.charAt(i) == ')') {
-                n--;
-            }
-            if (n < 0) {
-                return false;
-            }
-
+        String result = "";
+        while (!s.equals(result)) {
+            result = s;
+            s = s.replace("()", "");
         }
-
-        return n == 0;
+        return s.isEmpty();
     }
 }
