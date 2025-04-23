@@ -6,15 +6,15 @@ public class challengeday2 {
 
         System.out.println();
         System.out.println("soal 1 " + "-".repeat(50));
-        displayArr(orderEvenBeforeOdd(new int[] { 1, 2, 3, 4, 5 }));
+        displayArr(orderEvenBeforeOdd(new int[] { 3, 4, 6, 11, 5, 2, 10 }));
 
         System.out.println();
         System.out.println("soal 2 " + "-".repeat(50));
-        System.out.println("isPalindrome : " + isPalindrome(new String[] { "true", "true", "aa" }));
+        System.out.println("isPalindrome : " + isPalindrome(new String[] { "true", "false", "false" }));
 
         System.out.println();
         System.out.println("soal 3 " + "-".repeat(50));
-        displayArr(addOneplus(new int[] { 1, 2, 9 }));
+        displayArr(addOneplus(new int[] { 1, 2, 2 }));
         // soal4(7);
     }
 
@@ -32,15 +32,33 @@ public class challengeday2 {
      */
     public static int[] orderEvenBeforeOdd(int[] n) {
 
-        for (int i = 1; i < n.length; i++) {
+        int indexGenap = 0;
+
+        for (int i = 0; i < n.length; i++) {
             if (n[i] % 2 == 0) {
                 int temp = n[i];
-                int j = i;
-                while (j > 0 && n[j - 1] % 2 != 0) {
-                    n[j] = n[j - 1];
-                    j--;
+                n[i] = n[indexGenap];
+                n[indexGenap] = temp;
+                indexGenap++;
+            }
+        }
+        for (int i = 0; i < indexGenap - 1; i++) {
+            for (int j = 0; j < indexGenap - i - 1; j++) {
+                if (n[j] > n[j + 1]) {
+                    int temp = n[j];
+                    n[j] = n[j + 1];
+                    n[j + 1] = temp;
                 }
-                n[j] = temp;
+            }
+        }
+
+        for (int i = indexGenap; i < n.length - 1; i++) {
+            for (int j = indexGenap; j < n.length - 1 - (i - indexGenap); j++) {
+                if (n[j] > n[j + 1]) {
+                    int temp = n[j];
+                    n[j] = n[j + 1];
+                    n[j + 1] = temp;
+                }
             }
         }
 
