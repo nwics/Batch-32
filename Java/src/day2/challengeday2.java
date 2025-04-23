@@ -4,9 +4,17 @@ public class challengeday2 {
 
     public static void main(String[] args) {
 
+        System.out.println();
+        System.out.println("soal 1 " + "-".repeat(50));
         displayArr(orderEvenBeforeOdd(new int[] { 1, 2, 3, 4, 5 }));
-        displayArr(addOneplus(new int[] { 1, 2, 9 }));
+
+        System.out.println();
+        System.out.println("soal 2 " + "-".repeat(50));
         System.out.println("isPalindrome : " + isPalindrome(new String[] { "true", "true", "aa" }));
+
+        System.out.println();
+        System.out.println("soal 3 " + "-".repeat(50));
+        displayArr(addOneplus(new int[] { 1, 2, 9 }));
         // soal4(7);
     }
 
@@ -79,7 +87,7 @@ public class challengeday2 {
         return result;
     }
 
-    // soal 3 dan 4 ada di matrix
+    // soal 4 dan 5 ada di matrix
 
     // public static void soal4(int n) {
     // for (int i = 0; i < n; i++) {

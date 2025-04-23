@@ -4,14 +4,22 @@ public class matrix {
 
     public static void main(String[] args) {
 
+        System.out.println("soal 1 " + "-".repeat(50));
         int[][] hasil = matrixDiagonal(5);
         displayMatrix(hasil);
 
         System.out.println();
+        System.out.println("soal 2 " + "-".repeat(50));
+        int[][] hasil2 = matrixDiagona2l(5);
+        displayMatrix(hasil2);
+
+        System.out.println();
+        System.out.println("soal 3 " + "-".repeat(50));
         int[][] result = customMatrix(7);
         displayMatrix(result);
 
         System.out.println();
+        System.out.println("soal 4 " + "-".repeat(50));
         int[][] result3 = matrix3(8);
         displayMatrix(result3);
 
@@ -34,6 +42,23 @@ public class matrix {
                     matrix[i][j] = i + 1;
                 }
                 if (i > j) {
+                    matrix[i][j] = 20;
+                } else if (j > i) {
+                    matrix[i][j] = 10;
+                }
+            }
+        }
+        return matrix;
+    }
+
+    public static int[][] matrixDiagona2l(int n) {
+        int[][] matrix = new int[n][n];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (i == j) {
+                    matrix[i][j] = n--;
+                }
+                if (i > j) {
                     matrix[i][j] = 10;
                 } else if (j > i) {
                     matrix[i][j] = 20;
@@ -43,6 +68,7 @@ public class matrix {
         return matrix;
     }
 
+    // soal 4
     public static int[][] customMatrix(int n) {
         int[][] matrix = new int[n][n];
 
