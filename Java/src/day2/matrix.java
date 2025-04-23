@@ -34,6 +34,7 @@ public class matrix {
         }
     }
 
+    // soal 1
     public static int[][] matrixDiagonal(int n) {
         int[][] matrix = new int[n][n];
         for (int i = 0; i < matrix.length; i++) {
@@ -51,6 +52,7 @@ public class matrix {
         return matrix;
     }
 
+    // soal 2
     public static int[][] matrixDiagona2l(int n) {
         int[][] matrix = new int[n][n];
         for (int i = 0; i < matrix.length; i++) {
@@ -68,7 +70,7 @@ public class matrix {
         return matrix;
     }
 
-    // soal 4
+    // soal 3
     public static int[][] customMatrix(int n) {
         int[][] matrix = new int[n][n];
 
@@ -89,6 +91,7 @@ public class matrix {
         return matrix;
     }
 
+    // soal 4
     public static int[][] matrix3(int n) {
 
         int[][] matrix = new int[n][n];
