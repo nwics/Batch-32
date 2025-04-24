@@ -21,6 +21,8 @@ public class Main {
 
         Programmer prog1 = new Programmer(101, "tio", LocalDate.of(2025, 10, 11), "Programmer", 5_000_000, 1_000_000);
         // prog1.setSalary(1_000_000);
+        // prog1.setFullName(" jumawa");
+
         Employee prog2 = new Programmer(102, "juju", LocalDate.of(2025, 12, 11), "Programmer", 6_000_000, 500_000);
         Sales sales1 = new Sales(103, "Jodi", LocalDate.of(2024, 11, 12), "Sales", 9_000_000, 500_000, 600_000);
         Qa qa1 = new Qa(104, "Joko", LocalDate.of(2023, 11, 12), "QA", 7_000_000, 1_000_000);

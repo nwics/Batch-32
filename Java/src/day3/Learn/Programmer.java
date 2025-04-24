@@ -29,13 +29,17 @@ public class Programmer extends Employee {
     // return transportasi;
     // }
 
-    public LocalDate getTunjangan(LocalDate hireDate) {
-        return hireDate;
-    }
+    // public LocalDate getTunjangan(LocalDate hireDate) {
+    // return hireDate;
+    // }
 
     public void setSalary(double updateSalary) {
         super.setSalary(super.getSalary() + updateSalary);
         super.setTotalSalary(super.getSalary() + this.transportasi);
+    }
+
+    public void setFullName(String newName) {
+        super.setFullName(super.getFullName() + newName);
     }
 
     @Override
