@@ -6,7 +6,7 @@ public class challengeday2 {
 
         System.out.println();
         System.out.println("soal 1 " + "-".repeat(50));
-        displayArr(orderEvenBeforeOdd(new int[] { 3, 4, 6, 11, 5, 2, 10 }));
+        displayArr(orderEvenBeforeOdd(new int[] { 1, 2, 3, 4, 5 }));
 
         System.out.println();
         System.out.println("soal 2 " + "-".repeat(50));
