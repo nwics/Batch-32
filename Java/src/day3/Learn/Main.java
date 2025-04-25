@@ -19,7 +19,8 @@ public class Main {
         emp1.setSalary(6_000_000);
         emp1.setTotalSalary(emp1.getSalary());
 
-        Programmer prog1 = new Programmer(101, "tio", LocalDate.of(2025, 10, 11), "Programmer", 5_000_000, 1_000_000);
+        // Programmer prog1 = new Programmer(101, "tio", LocalDate.of(2025, 10, 11),
+        // "Programmer", 5_000_000, 1_000_000);
         // prog1.setSalary(1_000_000);
         // prog1.setFullName(" jumawa");
 
@@ -29,7 +30,7 @@ public class Main {
 
         List<Employee> listEmp = new ArrayList<>();
         listEmp.add(emp1);
-        listEmp.add(prog1);
+        // listEmp.add(prog1);
         listEmp.add(prog2);
         listEmp.add(sales1);
         listEmp.add(qa1);

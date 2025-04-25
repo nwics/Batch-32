@@ -5,7 +5,8 @@ import java.time.LocalDate;
 public class Programmer extends Employee {
     private double transportasi;
 
-    public Programmer(int empId, String fullName, LocalDate hireDate, String role, double salary, double transportasi) {
+    public Programmer(int empId, String fullName, LocalDate hireDate, Roles programmer, double salary,
+            double transportasi) {
         super(empId, fullName, hireDate, Roles.PROGRAMMER, salary);
         this.transportasi = transportasi;
         setTotalSalary(salary + this.transportasi);
