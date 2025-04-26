@@ -8,7 +8,11 @@ import day4.*;
 import day4.Learn.Roles;
 import day4.Learn.hr.Employee;
 import day4.Learn.hr.Programmerr;
+import day4.Learn.hr.Qa;
+import day4.Learn.hr.Sales;
 import day4.Learn.interfacee.IEmployee;
+import day4.Learn.salary.Commision;
+import day4.Learn.salary.Overtime;
 import day4.Learn.salary.Transportasi;
 
 public class EmployeeImpl implements IEmployee {
@@ -17,7 +21,12 @@ public class EmployeeImpl implements IEmployee {
     public List<Employee> initListEmployee() {
         Programmerr emp1 = new Programmerr(101, "juki", LocalDate.of(2024, 12, 12), Roles.PROGRAMMER, 5_000_000,
                 new Transportasi(LocalDate.now(), 500_000, 150_000, 100_000));
-        return List.of(emp1);
+        Sales emp2 = new Sales(101, "dini", LocalDate.of(2024, 1, 12), Roles.SALES, 6_000_000,
+                new Commision(LocalDate.now(), 1_000_000, 1_000_000), new Overtime(LocalDate.now(), 500_000));
+
+        Qa emp3 = new Qa(103, "rinn", LocalDate.of(2021, 10, 12), Roles.QA, 7_000_000,
+                new Overtime(LocalDate.now(), 1_000_000));
+        return List.of(emp1, emp2, emp3);
     }
 
     @Override
@@ -33,6 +42,34 @@ public class EmployeeImpl implements IEmployee {
             e.calculateTotalSalary();
         }
 
+    }
+
+    @Override
+    public void displaEmployeeSales(List<Sales> sales) {
+        for (Sales s : sales) {
+            System.out.println(s.toString());
+        }
+    }
+
+    @Override
+    public void generateSalarySales(List<Sales> sales) {
+        for (Sales s : sales) {
+            s.calculateTotalSalary();
+        }
+    }
+
+    @Override
+    public void displaEmployeeQa(List<Qa> qa) {
+        for (Qa q : qa) {
+            System.out.println(q.toString());
+        }
+    }
+
+    @Override
+    public void generateSalaryQa(List<Qa> qa) {
+        for (Qa q : qa) {
+            q.calculateTotalSalary();
+        }
     }
 
 }

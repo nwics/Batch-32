@@ -51,22 +51,17 @@ add foreign key (location_id) references hr.locations(location_id),
 add foreign key (user_id) references oe.users(user_id),
 add foreign key (bank_code) references oe.bank(bank_code);
 
-update oe.orders o
+update oe.orders as x
 set location_id = (
-	select l.location_id
-	from hr.locations l
-	where l.city = o.ship_city and 
-	l.postal_code = o.ship_postal_code and 
-	l.country_id = o.ship_country 
+	select location_id
+	from oe.location_x 
+	where street_address = x.ship_address and 
+	postal_code = x.ship_postal_code and 
+	city = x.ship_city and 
+	country_name = x.ship_country 
 )
-where o.location_id is null 
-and exists (
-	select 1
-	from hr.locations l
-	where l.city = o.ship_city and 
-	l.postal_code = o.ship_postal_code and 
-	l.country_id = o.ship_country 
-);
+where location_id is null ;
+--select * from oe
 --cek data untuk tabel order apakah cocok dengan hr location
 --select o.order_id ,o.ship_city ,o.ship_postal_code ,o.ship_city ,l.location_id 
 --from oe.orders o
