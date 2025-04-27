@@ -50,32 +50,4 @@ public class EmployeeImpl implements IEmployee {
 
     }
 
-    // @Override
-    // public void displaEmployeeSales(List<Sales> sales) {
-    // for (Sales s : sales) {
-    // System.out.println(s.toString());
-    // }
-    // }
-
-    // @Override
-    // public void generateSalarySales(List<Sales> sales) {
-    // for (Sales s : sales) {
-    // s.calculateTotalSalary();
-    // }
-    // }
-
-    // @Override
-    // public void displaEmployeeQa(List<Qa> qa) {
-    // for (Qa q : qa) {
-    // System.out.println(q.toString());
-    // }
-    // }
-
-    // @Override
-    // public void generateSalaryQa(List<Qa> qa) {
-    // for (Qa q : qa) {
-    // q.calculateTotalSalary();
-    // }
-    // }
-
 }
