@@ -2,7 +2,9 @@ package day4.Learn.salary;
 
 import java.time.LocalDate;
 
-public class Transportasi extends Salary {
+import day4.Learn.interfacee.ISalary;
+
+public class Transportasi extends Salary implements ISalary {
 
     private double transportasi;
     private double spj;
@@ -37,6 +39,11 @@ public class Transportasi extends Salary {
 
     public void setBensin(double bensin) {
         this.bensin = bensin;
+    }
+
+    @Override
+    public double calculateTotalSalary() {
+        return spj + bensin + transportasi;
     }
 
 }

@@ -30,46 +30,52 @@ public class EmployeeImpl implements IEmployee {
     }
 
     @Override
-    public void displaEmployee(List<Programmerr> employees) {
+    public void displaEmployee(List<Employee> employees) {
         for (Employee e : employees) {
             System.out.println(e.toString());
         }
     }
 
     @Override
-    public void generateSalary(List<Programmerr> employees) {
-        for (Programmerr e : employees) {
-            e.calculateTotalSalary();
+    public void generateSalary(List<Employee> employees) {
+        // double totalSalary = employee.getSalary()
+        for (Employee e : employees) {
+            if (e.getiSalary() != null) {
+                double totalSalary = e.getiSalary().calculateTotalSalary();
+                e.setTotalSalary(totalSalary);
+            } else {
+                e.setTotalSalary(e.getSalary());
+            }
         }
 
     }
 
-    @Override
-    public void displaEmployeeSales(List<Sales> sales) {
-        for (Sales s : sales) {
-            System.out.println(s.toString());
-        }
-    }
+    // @Override
+    // public void displaEmployeeSales(List<Sales> sales) {
+    // for (Sales s : sales) {
+    // System.out.println(s.toString());
+    // }
+    // }
 
-    @Override
-    public void generateSalarySales(List<Sales> sales) {
-        for (Sales s : sales) {
-            s.calculateTotalSalary();
-        }
-    }
+    // @Override
+    // public void generateSalarySales(List<Sales> sales) {
+    // for (Sales s : sales) {
+    // s.calculateTotalSalary();
+    // }
+    // }
 
-    @Override
-    public void displaEmployeeQa(List<Qa> qa) {
-        for (Qa q : qa) {
-            System.out.println(q.toString());
-        }
-    }
+    // @Override
+    // public void displaEmployeeQa(List<Qa> qa) {
+    // for (Qa q : qa) {
+    // System.out.println(q.toString());
+    // }
+    // }
 
-    @Override
-    public void generateSalaryQa(List<Qa> qa) {
-        for (Qa q : qa) {
-            q.calculateTotalSalary();
-        }
-    }
+    // @Override
+    // public void generateSalaryQa(List<Qa> qa) {
+    // for (Qa q : qa) {
+    // q.calculateTotalSalary();
+    // }
+    // }
 
 }

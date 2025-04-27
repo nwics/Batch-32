@@ -2,7 +2,9 @@ package day4.Learn.salary;
 
 import java.time.LocalDate;
 
-public class Overtime extends Salary {
+import day4.Learn.interfacee.ISalary;
+
+public class Overtime extends Salary implements ISalary {
 
     private double makan;
 
@@ -17,6 +19,12 @@ public class Overtime extends Salary {
 
     public void setMakan(double makan) {
         this.makan = makan;
+    }
+
+    @Override
+    public double calculateTotalSalary() {
+        return makan;
+
     }
 
 }

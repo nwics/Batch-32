@@ -2,7 +2,9 @@ package day4.Learn.salary;
 
 import java.time.LocalDate;
 
-public class Medical extends Salary {
+import day4.Learn.interfacee.ISalary;
+
+public class Medical extends Salary implements ISalary {
 
     private double kacamata;
 
@@ -17,6 +19,11 @@ public class Medical extends Salary {
 
     public void setKacamata(double kacamata) {
         this.kacamata = kacamata;
+    }
+
+    @Override
+    public double calculateTotalSalary() {
+        return kacamata;
     }
 
 }

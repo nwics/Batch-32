@@ -11,16 +11,8 @@ public interface IEmployee {
 
     List<Employee> initListEmployee();
 
-    void displaEmployee(List<Programmerr> employees);
+    void displaEmployee(List<Employee> employees);
 
-    void generateSalary(List<Programmerr> employees);
-
-    void displaEmployeeSales(List<Sales> sales);
-
-    void generateSalarySales(List<Sales> sales);
-
-    void displaEmployeeQa(List<Qa> qa);
-
-    void generateSalaryQa(List<Qa> qa);
+    void generateSalary(List<Employee> employees);
 
 }
