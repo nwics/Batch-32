@@ -19,7 +19,7 @@ public class App {
         List<Employee> employees = hrService.initEmployeeData();
 
         System.out.println("Total Employees: " + employees.size());
-        System.out.println("Total Salary: " + salaryService.generateSalary(employees));
+
         List<Employee> emp = employees.stream().filter(Employee.class::isInstance).map(Employee.class::cast)
                 .collect(Collectors.toList());
         hrService.displaEmployee(emp);
