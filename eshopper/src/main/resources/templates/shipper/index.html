@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{fragments/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category List</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+
+        <h1>Shiper List</h1>
+        <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+
+        <button class="btn btn-primary" onclick="window.location.href='/shipper/add'">Create</button>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Shipper ID</th>
+                    <th>Company Name</th>
+                    <th>Phone</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="shippers : ${shippers}">
+                    <td th:text="${shippers.shipperId}"></td>
+                    <td th:text="${shippers.companyName}"></td>
+                    <td th:text="${shippers.phone}"></td>
+                    <td><a th:href="@{/shipper/edit/{id}(id=${shippers.shipperId})}">Edit</a></td>
+                    <td><a th:href="@{/shipper/delete/{id}(id=${shippers.shipperId})}">Delete</a></td>
+                    <!-- <td th:text="${categories.categoryName}"></td> -->
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

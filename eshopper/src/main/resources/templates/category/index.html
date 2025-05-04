@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{fragments/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category List</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+
+        <h1>Category List</h1>
+        <button class="btn btn-primary" onclick="window.location.href='/category/addForm'">Create</button>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Category ID</th>
+                    <th>Category Name</th>
+                    <th>Description </th>
+                    <th>pictires </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="categories : ${categories}">
+                    <td th:text="${categories.categoryId}"></td>
+                    <td th:text="${categories.categoryName}"></td>
+                    <td th:text="${categories.description}"></td>
+                    <!-- <td th:text="${categories.categoryName}"></td> -->
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

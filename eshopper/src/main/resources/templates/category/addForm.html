@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html layout:decorate="~{fragments/layout}">
+
+<head>
+    <title>Add Form Category</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <h1>Category Form</h1>
+
+        <!-- th:action untuk submit ke /category/save -->
+        <!-- th:object untuk bind data ke objek Category -->
+        <form th:action="@{/category/save}" method="post" th:object="${category}">
+            <!-- hidden field untuk ID (jika update) -->
+            <input type="hidden" th:field="*{categoryId}">
+
+            <table class="table table-bordered">
+                <tr>
+                    <td>Category Name</td>
+                    <td><input type="text" th:field="*{categoryName}" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td><textarea th:field="*{description}" class="form-control"></textarea></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a th:href="@{/category/index}" class="btn btn-secondary">Cancel</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+
+</html>

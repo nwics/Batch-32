@@ -9,18 +9,34 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.codeid.eshopper.Service.CategoryService;
 import com.codeid.eshopper.model.Employee;
 
 @Controller
 @RequestMapping("index")
 public class IndexController {
 
-    @GetMapping("/")
-    public String showIndex(Model model) {
-        model.addAttribute("title", "Hello bootcamp");
-        return "index";
+    private final CategoryService categoryService;
+
+    public IndexController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
+
+    @GetMapping("")
+    public ModelAndView showIndex() {
+        // ModelAndView view = new ModelAndView("/index");
+        // return view;
+        ModelAndView view = new ModelAndView("/index");
+        view.addObject("categories", categoryService.getDataCategory());
+        return view;
+
+    }
+    // public String showIndex(Model model) {
+    // model.addAttribute("title", "Hello bootcamp");
+    // return "index";
+    // }
 
     @GetMapping("/employee")
     public String showEmployee(Model model) {

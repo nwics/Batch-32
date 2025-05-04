@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{fragments/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add or Edit Shipper</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <h2 th:text="${shipper.shipperId != null} ? 'Edit Shipper' : 'Add New Shipper'">Shipper Form</h2>
+
+        <form th:action="@{/shipper/save}" method="post" th:object="${shipper}">
+            <!-- Hidden field untuk edit -->
+            <input type="hidden" th:if="*{shipperId != null}" th:field="*{shipperId}" />
+
+            <div class="mb-3">
+                <label for="companyName">Company Name</label>
+                <input type="text" id="companyName" class="form-control" th:field="*{companyName}" />
+                <div th:if="${#fields.hasErrors('companyName')}" class="text-danger" th:errors="*{companyName}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" class="form-control" th:field="*{phone}" />
+                <div th:if="${#fields.hasErrors('phone')}" class="text-danger" th:errors="*{phone}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Save</button>
+            <a class="btn btn-secondary" th:href="@{/shipper/index}">Cancel</a>
+        </form>
+    </div>
+</body>
+
+</html>
