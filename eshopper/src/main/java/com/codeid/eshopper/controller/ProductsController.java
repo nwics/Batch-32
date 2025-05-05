@@ -10,6 +10,7 @@ import com.codeid.eshopper.Service.ProductsService;
 import com.codeid.eshopper.Service.SupplierService;
 import com.codeid.eshopper.model.Category;
 import com.codeid.eshopper.model.Products;
+import com.codeid.eshopper.model.Shippers;
 import com.codeid.eshopper.model.Suppliers;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +34,7 @@ public class ProductsController {
         this.supplierService = supplierService;
     }
 
-    @GetMapping("")
+    @GetMapping("/index")
     public ModelAndView getAllData() {
         ModelAndView view = new ModelAndView("/products/index");
         view.addObject("products", productsService.gettAllProducts());
@@ -43,8 +44,11 @@ public class ProductsController {
     @GetMapping("/addForm")
     public ModelAndView addDataProduct() {
         ModelAndView view = new ModelAndView("/products/addForm");
-        Suppliers suppliers = new Suppliers();
-        Category category = new Category();
+        // Suppliers suppliers = new Suppliers();
+        // Category category = new Category();
+        // Shippers shippers = new Shippers();
+        view.addObject("shippers", new Shippers());
+        view.addObject("category", new Category());
         view.addObject("products", new Products());
         return view;
     }

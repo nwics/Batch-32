@@ -1,14 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{fragments/layout}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Product List</title>
 </head>
 
 <body>
+    <div layout:fragment="content">
 
+        <h1>Product List</h1>
+        <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+
+        <button class="btn btn-primary" onclick="window.location.href='/products/add'">Create</button>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Prodcut ID</th>
+                    <th>Product Name</th>
+                    <th>Supplier ID</th>
+                    <th>Category ID</th>
+                    <th>Quantity Per Unit</th>
+                    <th>Unit Price</th>
+                    <th>Units In Stock</th>
+                    <th>Units In Order</th>
+                    <th>Reorder Level</th>
+                    <th>Discontinued</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="product : ${products}">
+                    <td th:text="${product.productId}"></td>
+                    <td th:text="${product.productName}"></td>
+                    <td th:text="${product.supplierId}"></td>
+                    <td th:text="${product.categoryId}"></td>
+                    <td th:text="${product.quantityPerUnit}"></td>
+                    <td th:text="${product.unitPrice}"></td>
+                    <td th:text="${product.unitsInStock}"></td>
+                    <td th:text="${product.unitsOnOrder}"></td>
+                    <td th:text="${product.reorderLevel}"></td>
+                    <td th:text="${product.discontinued}"></td>
+                    <!-- <td><a th:href="@{/shipper/edit/{id}(id=${shippers.shipperId})}">Edit</a></td>
+                    <td><a th:href="@{/shipper/delete/{id}(id=${shippers.shipperId})}">Delete</a></td> -->
+                    <!-- <td th:text="${categories.categoryName}"></td> -->
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>

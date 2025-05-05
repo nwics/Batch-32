@@ -18,7 +18,9 @@
                     <th>Category ID</th>
                     <th>Category Name</th>
                     <th>Description </th>
-                    <th>pictires </th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                    <!-- <th>pictires </th> -->
 
                 </tr>
             </thead>
@@ -27,6 +29,8 @@
                     <td th:text="${categories.categoryId}"></td>
                     <td th:text="${categories.categoryName}"></td>
                     <td th:text="${categories.description}"></td>
+                    <td><a th:href="@{/category/edit/{id}(id=${categories.categoryId})}">Edit</a></td>
+                    <td><a th:href="@{/category/delete/{id}(id=${categories.categoryId})}">Delete</a></td>
                     <!-- <td th:text="${categories.categoryName}"></td> -->
 
                 </tr>

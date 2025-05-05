@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 
+import com.codeid.eshopper.Service.CategoryService;
 import com.codeid.eshopper.Service.ShipperService;
 import com.codeid.eshopper.model.Category;
 import com.codeid.eshopper.model.Shippers;
@@ -25,15 +26,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ShipperController {
 
     private final ShipperService shipperService;
+    private final CategoryService categoryService;
 
-    public ShipperController(ShipperService shipperService) {
+    public ShipperController(ShipperService shipperService, CategoryService categoryService) {
         this.shipperService = shipperService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/index")
     public ModelAndView showShipper() {
         ModelAndView view = new ModelAndView("/shipper/index");
         view.addObject("shippers", shipperService.getAllShipper());
+        view.addObject("categories", categoryService.getDataCategory());
         return view;
     }
 
@@ -57,9 +61,9 @@ public class ShipperController {
             redirectAttributes.addFlashAttribute("message", "data shipper berhasil ditambahkan");
         } else {
 
-            Optional<Shippers> existing = shipperService.findShipperById(shippers.getShipperId());
-            if (existing.isPresent()) {
-                Shippers updated = existing.get();
+            Optional<Shippers> cekData = shipperService.findShipperById(shippers.getShipperId());
+            if (cekData.isPresent()) {
+                Shippers updated = cekData.get();
                 updated.setCompanyName(shippers.getCompanyName());
                 updated.setPhone(shippers.getPhone());
                 shipperService.addShippers(updated);

@@ -31,7 +31,7 @@ public class Category {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "picture")
+    @Column(name = "picture", nullable = true)
     private String picture;
 
 }
