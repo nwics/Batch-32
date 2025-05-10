@@ -15,6 +15,7 @@ import com.example.eshopay_be.service.CategoryService;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.var;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -25,14 +26,24 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     public static CategoryDTO mapToDTO(Category category) {
+        if (category == null) {
+            return null;
+        }
         return new CategoryDTO(category.getCategoryId(), category.getCategoryName(), category.getDescription(),
                 category.getPicture());
     }
 
+    public static Category mapToModel(CategoryDTO categoryDTO) {
+        if (categoryDTO == null) {
+            return null;
+        }
+        return new Category(categoryDTO.getCategoryId(), categoryDTO.getCategoryName(), categoryDTO.getDescription(),
+                categoryDTO.getPicture());
+    }
+
     @Override
     public List<CategoryDTO> findAll() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+
         log.debug("request to get data shippers");
         return this.categoryRepository.findAll().stream().map(CategoryServiceImpl::mapToDTO)
                 .collect(Collectors.toList());
@@ -40,8 +51,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO findById(Long id) {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'findById'");
 
         log.debug("Request to get category : {}", id);
         return this.categoryRepository.findById(id).map(CategoryServiceImpl::mapToDTO)
@@ -50,8 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO save(CategoryDTO entity) {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'save'");
+
         log.debug("Request to create department : {}", entity);
 
         Category category = new Category();
@@ -64,10 +72,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO update(Long id, CategoryDTO entity) {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'update'");
 
-        log.debug("Request to update Department : {}", id);
+        // log.debug("Request to update Department : {}", id);
 
         Category category = this.categoryRepository
                 .findById(id)
@@ -80,10 +86,21 @@ public class CategoryServiceImpl implements CategoryService {
         return mapToDTO(category);
     }
 
+    // debuggin punya orang
+    // @Override
+    // public CategoryDTO update(Long id, CategoryDTO entity) {
+    // var category = this.categoryRepository
+    // .findById(id)
+    // .orElse(null);
+    // category.setCategoryName(entity.getCategoryName());
+    // category.setDescription(entity.getDescription());
+    // this.categoryRepository.save(category);
+    // return mapToDTO(category);
+    // }
+
     @Override
     public void delete(Long id) {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'delete'");
+
         log.debug("Request to delete Department : {}", id);
 
         Category category = this.categoryRepository.findById(id)

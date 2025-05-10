@@ -23,7 +23,17 @@ public class SupplierServiceImpl implements SupplierService {
     private final SuppliersRepository suppliersRepository;
 
     public static SupplierDTO mapToDto(Suppliers suppliers) {
+        if (suppliers == null) {
+            return null;
+        }
         return new SupplierDTO(suppliers.getSupplierId(), suppliers.getCompanyName());
+    }
+
+    public static Suppliers mapToModel(SupplierDTO supplierDTO) {
+        if (supplierDTO == null) {
+            return null;
+        }
+        return new Suppliers(supplierDTO.getSupplierId(), supplierDTO.getCompanyName());
     }
 
     @Override
