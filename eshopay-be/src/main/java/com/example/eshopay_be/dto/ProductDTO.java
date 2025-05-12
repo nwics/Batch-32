@@ -22,6 +22,7 @@ public class ProductDTO {
     private Integer unitsOnOrder;
     private Integer reorderLevel;
     private Integer discontinued;
+    private String pictures;
     private SupplierDTO supplierDTO;
     private CategoryDTO categoryDTO;
 }

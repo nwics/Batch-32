@@ -48,6 +48,9 @@ public class Products extends BaseEntity {
     @Column(name = "discontinued")
     private Integer discontinued;
 
+    @Column(name = "pictures")
+    private String pictures;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "supplier_id")
     private Suppliers suppliers;

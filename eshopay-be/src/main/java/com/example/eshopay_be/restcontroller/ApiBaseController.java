@@ -33,7 +33,7 @@ public abstract class ApiBaseController<T, ID> {
         ApiResponse<List<T>> apiResponse = new ApiResponse<>(
                 "susccess get data", getService().findAll(), LocalDateTime.now(), HttpStatus.OK.value());
         return ResponseEntity.ok(apiResponse);
-        // return ResponseEntity.ok(getService().findAll());
+
     }
 
     @GetMapping("/{id}")
@@ -63,7 +63,6 @@ public abstract class ApiBaseController<T, ID> {
         ApiResponse<Void> apiResponse = new ApiResponse<>(
                 "success delete data", null, LocalDateTime.now(), HttpStatus.OK.value());
         return ResponseEntity.ok(apiResponse);
-        // getService().delete(id);
-        // return ResponseEntity.noContent().build();
+
     }
 }
