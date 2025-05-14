@@ -1,7 +1,11 @@
 package com.example.eshopay_be.restcontroller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.eshopay_be.dto.ApiResponse;
 import com.example.eshopay_be.dto.ProductDTO;
+import com.example.eshopay_be.dto.ProductPhotoDTO;
 import com.example.eshopay_be.exception.FileSizeExceededException;
 import com.example.eshopay_be.service.BaseService;
 import com.example.eshopay_be.service.FileStorageService;
@@ -24,6 +29,10 @@ import com.example.eshopay_be.util.SuccessMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,8 +50,7 @@ public class ApiProductController extends ApiBaseMultipartController<ProductDTO,
             ApiResponse<ProductDTO> apiResponse = new ApiResponse<>(ErrorMessage.Photo.UPLOAD_IMAGE, null,
                     LocalDateTime.now(),
                     ErrorMessage.Http.BAD_REQUEST);
-            // return new ApiResponse<>("please upload photo", null,
-            // LocalDateTime.now(),HttpStatus.BAD_REQUEST.v);
+
             return ResponseEntity.badRequest().body(apiResponse);
         }
         if (file != null && file.getSize() > 1024L * 1024 * 1024) {
@@ -60,9 +68,7 @@ public class ApiProductController extends ApiBaseMultipartController<ProductDTO,
             ApiResponse<ProductDTO> apiResponse = new ApiResponse<>(
                     "Error" + e.getMessage(), null, LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
-            // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            // .body(Collections.singletonMap("error", e.getMessage())
-            // );
+
         }
     }
 
@@ -72,15 +78,12 @@ public class ApiProductController extends ApiBaseMultipartController<ProductDTO,
         try {
             Resource resource = fileStorageService.loadFile(filename);
             String contentType = determineContentType(filename);
-            // ApiResponse<Resource> apiResponse = new ApiResponse<>(
-            // SuccessMessage.View.View_Image, resource, LocalDateTime.now(),
-            // HttpStatus.OK.value());
 
             return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
         } catch (Exception e) {
-            // TODO: handle exception
+
             return ResponseEntity.notFound().build();
         }
 
@@ -89,11 +92,7 @@ public class ApiProductController extends ApiBaseMultipartController<ProductDTO,
     @Override
     public ResponseEntity<ApiResponse<ProductDTO>> updateMultipart(Long id, ProductDTO dto, MultipartFile file,
             String description) {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method
-        // 'updateMultipart'");
-        // throw new UnsupportedOperationException("Unplimment method
-        // 'UpdateMultipart");
+
         try {
             ProductDTO existData = productsService.findById(id);
             if (existData == null) {
@@ -103,11 +102,11 @@ public class ApiProductController extends ApiBaseMultipartController<ProductDTO,
                 throw new FileSizeExceededException("file size must less than 1 gb");
             }
             if (file != null && !file.isEmpty()) {
+                if (existData.getPictures() != null) {
+                    fileStorageService.deleteFile(existData.getPictures());
+                }
                 String fileName = fileStorageService.storeFileWithRandomName(file);
                 dto.setPictures(fileName);
-                // if (existData.getPictures()!= null) {
-                // fileStorageService.deleteFile(existData.getPictures());
-                // }
 
             } else {
                 dto.setPictures(existData.getPictures());
@@ -120,7 +119,7 @@ public class ApiProductController extends ApiBaseMultipartController<ProductDTO,
             return ResponseEntity.ok(apiResponse);
 
         } catch (Exception e) {
-            // TODO: handle exception
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
@@ -128,9 +127,45 @@ public class ApiProductController extends ApiBaseMultipartController<ProductDTO,
 
     @Override
     protected BaseService<ProductDTO, Long> getService() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'getService'");
+
         return productsService;
+    }
+
+    @PostMapping("/{id}/photos/bulkinsert")
+    public ResponseEntity<?> insertBulkEmpPhoto(@PathVariable Long id,
+            @RequestParam("files") List<MultipartFile> files) {
+        try {
+            if (files.isEmpty()) {
+                return ResponseEntity.badRequest().body("Please upload at least one photo.");
+            }
+
+            List<Map<String, Object>> uploadedFiles = new ArrayList<>();
+
+            for (MultipartFile file : files) {
+                String fileName = fileStorageService.storeFileWithRandomName(file);
+
+                Map<String, Object> fileInfo = new HashMap<>();
+                fileInfo.put("employeeId", id);
+                fileInfo.put("fileName", fileName);
+                fileInfo.put("fileUrl", "http://localhost:8088/api/employee/view/" + fileName);
+                fileInfo.put("statusCode", 200);
+
+                uploadedFiles.add(fileInfo);
+            }
+
+            var response = ApiResponse.builder()
+                    .message("Employee photos created")
+                    .statusCode(200)
+                    .data(uploadedFiles)
+                    .timestamp(LocalDateTime.now())
+                    .build();
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", e.getMessage()));
+        }
     }
 
 }

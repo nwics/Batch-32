@@ -1,11 +1,18 @@
 package com.example.eshopay_be.service.serviceImpl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.eshopay_be.dao.ShipperRepository;
+import com.example.eshopay_be.dto.ApiResponsePagination;
+import com.example.eshopay_be.dto.Pagination;
 import com.example.eshopay_be.dto.ShippersDTO;
 import com.example.eshopay_be.model.Shippers;
 import com.example.eshopay_be.model.Suppliers;
@@ -27,11 +34,27 @@ public class ShipperServiceImpl implements ShipperService {
     }
 
     @Override
-    public List<ShippersDTO> findAll() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'findAll'");
-        log.debug("request to get data shippers");
-        return this.shipperRepository.findAll().stream().map(ShipperServiceImpl::mapToDTO).collect(Collectors.toList());
+    public ApiResponsePagination<ShippersDTO> findAll(Integer size, Integer current) {
+
+        Pageable pageable = PageRequest.of(current - 1, size, Sort.by("shipperId"));
+        Page<Shippers> pageResult = shipperRepository.findAll(pageable);
+        List<ShippersDTO> shippersDTOs = pageResult.getContent().stream().map(ShipperServiceImpl::mapToDTO)
+                .collect(Collectors.toList());
+
+        Pagination pagination = new Pagination();
+        pagination.setSize(size);
+        pagination.setCurrent(current);
+        pagination.setTotal(pageResult.getTotalElements());
+        pagination.setTotalPages(pageResult.getTotalPages());
+
+        ApiResponsePagination<ShippersDTO> response = new ApiResponsePagination<>();
+        response.setMessage("success get data");
+        response.setPage(pagination);
+        response.setStatusCode(200);
+        response.setTimestamp(LocalDateTime.now());
+        response.setData(shippersDTOs);
+
+        return response;
     }
 
     @Override

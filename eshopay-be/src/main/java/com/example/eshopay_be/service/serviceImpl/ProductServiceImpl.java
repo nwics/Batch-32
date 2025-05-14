@@ -1,15 +1,26 @@
 package com.example.eshopay_be.service.serviceImpl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.example.eshopay_be.dao.CategoryRepository;
+import com.example.eshopay_be.dao.ProductPhotoRepository;
 import com.example.eshopay_be.dao.ProductsRepository;
+import com.example.eshopay_be.dto.ApiResponsePagination;
+import com.example.eshopay_be.dto.Pagination;
 import com.example.eshopay_be.dto.ProductDTO;
+import com.example.eshopay_be.dto.ProductPhotoDTO;
 import com.example.eshopay_be.dto.SupplierDTO;
 import com.example.eshopay_be.exception.ProductNotFoundException;
 import com.example.eshopay_be.model.Category;
+import com.example.eshopay_be.model.ProductImages;
 import com.example.eshopay_be.model.Products;
 import com.example.eshopay_be.model.Suppliers;
 import com.example.eshopay_be.service.ProductsService;
@@ -23,6 +34,8 @@ import lombok.RequiredArgsConstructor;
 public class ProductServiceImpl implements ProductsService {
 
     private final ProductsRepository productsRepository;
+
+    private final ProductPhotoRepository productPhotoRepository;
 
     public static ProductDTO mapToDto(Products products) {
 
@@ -43,10 +56,26 @@ public class ProductServiceImpl implements ProductsService {
     }
 
     @Override
-    public List<ProductDTO> findAll() {
+    public ApiResponsePagination<ProductDTO> findAll(Integer size, Integer current) {
 
-        return this.productsRepository.findAll().stream().map(ProductServiceImpl::mapToDto)
+        Pageable pageable = PageRequest.of(current - 1, size, Sort.by("productId").ascending());
+        Page<Products> pageResult = productsRepository.findAll(pageable);
+        List<ProductDTO> productDTOs = pageResult.getContent().stream().map(ProductServiceImpl::mapToDto)
                 .collect(Collectors.toList());
+        Pagination pagination = new Pagination();
+        pagination.setCurrent(current);
+        pagination.setSize(size);
+        pagination.setTotal(pageResult.getTotalElements());
+        pagination.setTotalPages(pageResult.getTotalPages());
+
+        ApiResponsePagination<ProductDTO> response = new ApiResponsePagination<>();
+        response.setMessage("success get data");
+        response.setStatusCode(200);
+        response.setData(productDTOs);
+        response.setTimestamp(LocalDateTime.now());
+        response.setPage(pagination);
+
+        return response;
     }
 
     @Override
@@ -75,6 +104,7 @@ public class ProductServiceImpl implements ProductsService {
         products.setUnitsInStock(entity.getUnitsInStock());
         products.setUnitsOnOrder(entity.getUnitsOnOrder());
         products.setReorderLevel(entity.getReorderLevel());
+        products.setPictures(entity.getPictures());
         products.setDiscontinued(entity.getDiscontinued());
         products.setSuppliers(
                 new Suppliers(entity.getSupplierDTO().getSupplierId(), entity.getSupplierDTO().getCompanyName()));

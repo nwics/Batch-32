@@ -1,12 +1,19 @@
 package com.example.eshopay_be.service.serviceImpl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.eshopay_be.dao.CategoryRepository;
+import com.example.eshopay_be.dto.ApiResponsePagination;
 import com.example.eshopay_be.dto.CategoryDTO;
+import com.example.eshopay_be.dto.Pagination;
 import com.example.eshopay_be.dto.ShippersDTO;
 import com.example.eshopay_be.model.Category;
 import com.example.eshopay_be.model.Shippers;
@@ -42,11 +49,29 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryDTO> findAll() {
+    public ApiResponsePagination<CategoryDTO> findAll(Integer size, Integer current) {
 
-        log.debug("request to get data shippers");
-        return this.categoryRepository.findAll().stream().map(CategoryServiceImpl::mapToDTO)
+        // log.debug("request to get data shippers");
+        // return
+        // this.categoryRepository.findAll().stream().map(CategoryServiceImpl::mapToDTO)
+        // .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(current - 1, size, Sort.by("categoryId").ascending());
+        Page<Category> pageResult = categoryRepository.findAll(pageable);
+        List<CategoryDTO> categoryDTOs = pageResult.getContent().stream().map(CategoryServiceImpl::mapToDTO)
                 .collect(Collectors.toList());
+        Pagination pagination = new Pagination();
+        pagination.setSize(size);
+        pagination.setCurrent(current);
+        pagination.setTotal(pageResult.getTotalElements());
+        pagination.setTotalPages(pageResult.getTotalPages());
+
+        ApiResponsePagination<CategoryDTO> response = new ApiResponsePagination<>();
+        response.setMessage("success get category");
+        response.setTimestamp(LocalDateTime.now());
+        response.setStatusCode(200);
+        response.setData(categoryDTOs);
+        response.setPage(pagination);
+        return response;
     }
 
     @Override

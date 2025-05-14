@@ -12,7 +12,7 @@ import com.example.eshopay_be.dto.ApiResponse;
 @ControllerAdvice
 public class RestExceptionHandler {
 
-    @ExceptionHandler()
+    @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleProductsNotFound(ProductNotFoundException e) {
         ApiResponse<Object> errorResponse = createErrorResponse(e.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
