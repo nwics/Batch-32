@@ -42,5 +42,5 @@ public class ProductImages extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private ProductImages productImages;
+    private Products products;
 }

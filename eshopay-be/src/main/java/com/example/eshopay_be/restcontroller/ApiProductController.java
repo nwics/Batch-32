@@ -20,6 +20,7 @@ import com.example.eshopay_be.dto.ApiResponse;
 import com.example.eshopay_be.dto.ProductDTO;
 import com.example.eshopay_be.dto.ProductPhotoDTO;
 import com.example.eshopay_be.exception.FileSizeExceededException;
+import com.example.eshopay_be.model.ProductImages;
 import com.example.eshopay_be.service.BaseService;
 import com.example.eshopay_be.service.FileStorageService;
 import com.example.eshopay_be.service.ProductsService;
@@ -136,25 +137,36 @@ public class ApiProductController extends ApiBaseMultipartController<ProductDTO,
             @RequestParam("files") List<MultipartFile> files) {
         try {
             if (files.isEmpty()) {
-                return ResponseEntity.badRequest().body("Please upload at least one photo.");
+                return ResponseEntity.badRequest().body("Please upload photo.");
             }
 
-            List<Map<String, Object>> uploadedFiles = new ArrayList<>();
+            List<ProductPhotoDTO> uploadedFiles = new ArrayList<>();
 
             for (MultipartFile file : files) {
-                String fileName = fileStorageService.storeFileWithRandomName(file);
+                ProductImages saveImages = productsService.UploadProductImage(file, id);
+                // String fileName = fileStorageService.storeFileWithRandomName(file);
+                ProductPhotoDTO productPhotoDTO = ProductPhotoDTO.builder()
+                        .producttoId(saveImages.getProductToId())
+                        .fileName(saveImages.getFileName())
+                        .fileSize(saveImages.getFileSize())
+                        .fileType(saveImages.getFileType())
+                        .fileUri(saveImages.getFileUrl())
+                        .productId(saveImages.getProducts().getProductId())
+                        .build();
 
-                Map<String, Object> fileInfo = new HashMap<>();
-                fileInfo.put("employeeId", id);
-                fileInfo.put("fileName", fileName);
-                fileInfo.put("fileUrl", "http://localhost:8088/api/employee/view/" + fileName);
-                fileInfo.put("statusCode", 200);
+                uploadedFiles.add(productPhotoDTO);
 
-                uploadedFiles.add(fileInfo);
+                // Map<String, Object> fileInfo = new HashMap<>();
+                // fileInfo.put("productId", id);
+                // fileInfo.put("fileName", fileName);
+                // fileInfo.put("fileUrl", "localhost:8989/api/product/view/" + fileName);
+                // fileInfo.put("statusCode", 200);
+
+                // uploadedFiles.add(fileInfo);
             }
 
-            var response = ApiResponse.builder()
-                    .message("Employee photos created")
+            ApiResponse<Object> response = ApiResponse.builder()
+                    .message("product photos created")
                     .statusCode(200)
                     .data(uploadedFiles)
                     .timestamp(LocalDateTime.now())

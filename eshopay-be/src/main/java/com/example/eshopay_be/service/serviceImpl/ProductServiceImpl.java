@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.eshopay_be.dao.CategoryRepository;
 import com.example.eshopay_be.dao.ProductPhotoRepository;
@@ -23,6 +24,7 @@ import com.example.eshopay_be.model.Category;
 import com.example.eshopay_be.model.ProductImages;
 import com.example.eshopay_be.model.Products;
 import com.example.eshopay_be.model.Suppliers;
+import com.example.eshopay_be.service.FileStorageService;
 import com.example.eshopay_be.service.ProductsService;
 import com.example.eshopay_be.util.ErrorMessage;
 
@@ -36,6 +38,8 @@ public class ProductServiceImpl implements ProductsService {
     private final ProductsRepository productsRepository;
 
     private final ProductPhotoRepository productPhotoRepository;
+
+    private final FileStorageService fileStorageService;
 
     public static ProductDTO mapToDto(Products products) {
 
@@ -119,6 +123,39 @@ public class ProductServiceImpl implements ProductsService {
         Products products = productsRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(ErrorMessage.Product.PRODUCT_NOT_FOUND));
         productsRepository.deleteById(products.getProductId());
+    }
+
+    @Override
+    public ProductImages UploadProductImage(MultipartFile file, Long productId) {
+
+        try {
+            Products products = productsRepository.findById(productId)
+                    .orElseThrow(() -> new RuntimeException("Produk tidak ada"));
+
+            String storeFileName = fileStorageService.storeFileWithRandomName(file);
+
+            ProductImages image = ProductImages.builder()
+                    .fileName(storeFileName)
+                    .fileSize(file.getSize())
+                    .fileType(file.getContentType())
+                    .fileUrl("localhost:8989/api/product/view/" + storeFileName)
+                    .products(products)
+                    .build();
+
+            return productPhotoRepository.save(image);
+
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+            throw new RuntimeException("error upload image " + e.getMessage(), e);
+        }
+
+    }
+
+    @Override
+    public ProductImages findProductImagesById(Long productId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findProductImagesById'");
     }
 
 }
