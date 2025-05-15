@@ -153,9 +153,23 @@ public class ProductServiceImpl implements ProductsService {
     }
 
     @Override
-    public ProductImages findProductImagesById(Long productId) {
+    public List<ProductPhotoDTO> findProductImagesById(Long productId) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findProductImagesById'");
+        // throw new UnsupportedOperationException("Unimplemented method
+        // 'findProductImagesById'");
+        Products products = productsRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("produk tidak ada"));
+
+        List<ProductImages> images = productPhotoRepository.findByProducts(products);
+        return images.stream().map(image -> ProductPhotoDTO.builder()
+                .producttoId(image.getProductToId())
+                .fileName(image.getFileName())
+                .fileSize(image.getFileSize())
+                .fileType(image.getFileType())
+                .fileUri(image.getFileUrl())
+                .productId(productId)
+                .build()).collect(Collectors.toList());
+
     }
 
 }

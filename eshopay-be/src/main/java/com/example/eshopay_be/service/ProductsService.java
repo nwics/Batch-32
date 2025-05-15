@@ -12,5 +12,5 @@ public interface ProductsService extends BaseService<ProductDTO, Long> {
 
     ProductImages UploadProductImage(MultipartFile file, Long productId);
 
-    ProductImages findProductImagesById(Long productId);
+    List<ProductPhotoDTO> findProductImagesById(Long productId);
 }

@@ -180,4 +180,22 @@ public class ApiProductController extends ApiBaseMultipartController<ProductDTO,
         }
     }
 
+    @GetMapping("/{productId}/photos")
+    public ResponseEntity<?> getPhotoByProductId(@PathVariable Long productId) {
+        try {
+            List<ProductPhotoDTO> images = productsService.findProductImagesById(productId);
+            var response = ApiResponse.builder()
+                    .message("success get photo")
+                    .data(images)
+                    .statusCode(200)
+                    .timestamp(LocalDateTime.now())
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // TODO: handle exception
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", e.getMessage()));
+        }
+    }
+
 }
