@@ -7,7 +7,8 @@ import com.example.eshopay_be.dto.ApiResponsePagination;
 public interface BaseService<T, ID> {
 
     // List<T> findAll();
-    ApiResponsePagination<T> findAll(Integer size, Integer current);
+    ApiResponsePagination<T> findAll(Integer size, Integer current, String keyword, String category,
+            String sortingDirection);
 
     T findById(ID id);
 

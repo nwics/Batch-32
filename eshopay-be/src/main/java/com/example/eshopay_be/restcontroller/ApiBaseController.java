@@ -33,9 +33,11 @@ public abstract class ApiBaseController<T, ID> {
 
     @GetMapping("/")
     public ResponseEntity<ApiResponsePagination<T>> getAll(@RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(defaultValue = "1") Integer current) {
+            @RequestParam(defaultValue = "1") Integer current, @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "") String category,
+            @RequestParam(defaultValue = "asc") String sortingDirection) {
 
-        ApiResponsePagination<T> response = getService().findAll(size, current);
+        ApiResponsePagination<T> response = getService().findAll(size, current, keyword, category, sortingDirection);
         return ResponseEntity.ok(response);
 
     }

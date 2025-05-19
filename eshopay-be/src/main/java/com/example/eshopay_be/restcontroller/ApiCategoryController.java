@@ -25,8 +25,7 @@ public class ApiCategoryController extends ApiBaseController<CategoryDTO, Long> 
 
     @Override
     protected BaseService<CategoryDTO, Long> getService() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'getService'");
+
         return categoryService;
     }
 

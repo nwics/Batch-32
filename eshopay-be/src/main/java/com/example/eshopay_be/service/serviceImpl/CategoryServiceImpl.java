@@ -49,12 +49,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ApiResponsePagination<CategoryDTO> findAll(Integer size, Integer current) {
+    public ApiResponsePagination<CategoryDTO> findAll(Integer size, Integer current, String keyword,
+            String categoryName, String sortingDirection) {
 
-        // log.debug("request to get data shippers");
-        // return
-        // this.categoryRepository.findAll().stream().map(CategoryServiceImpl::mapToDTO)
-        // .collect(Collectors.toList());
         Pageable pageable = PageRequest.of(current - 1, size, Sort.by("categoryId").ascending());
         Page<Category> pageResult = categoryRepository.findAll(pageable);
         List<CategoryDTO> categoryDTOs = pageResult.getContent().stream().map(CategoryServiceImpl::mapToDTO)
@@ -110,18 +107,6 @@ public class CategoryServiceImpl implements CategoryService {
         this.categoryRepository.save(category);
         return mapToDTO(category);
     }
-
-    // debuggin punya orang
-    // @Override
-    // public CategoryDTO update(Long id, CategoryDTO entity) {
-    // var category = this.categoryRepository
-    // .findById(id)
-    // .orElse(null);
-    // category.setCategoryName(entity.getCategoryName());
-    // category.setDescription(entity.getDescription());
-    // this.categoryRepository.save(category);
-    // return mapToDTO(category);
-    // }
 
     @Override
     public void delete(Long id) {

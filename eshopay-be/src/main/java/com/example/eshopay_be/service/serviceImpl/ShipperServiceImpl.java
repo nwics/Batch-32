@@ -34,7 +34,8 @@ public class ShipperServiceImpl implements ShipperService {
     }
 
     @Override
-    public ApiResponsePagination<ShippersDTO> findAll(Integer size, Integer current) {
+    public ApiResponsePagination<ShippersDTO> findAll(Integer size, Integer current, String keyword,
+            String categoryName, String sortingDirection) {
 
         Pageable pageable = PageRequest.of(current - 1, size, Sort.by("shipperId"));
         Page<Shippers> pageResult = shipperRepository.findAll(pageable);

@@ -4,17 +4,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.eshopay_be.dao.CategoryRepository;
 import com.example.eshopay_be.dao.ProductPhotoRepository;
 import com.example.eshopay_be.dao.ProductsRepository;
+import com.example.eshopay_be.dao.specs.ProductItemSpec;
 import com.example.eshopay_be.dto.ApiResponsePagination;
+import com.example.eshopay_be.dto.Filter;
 import com.example.eshopay_be.dto.Pagination;
 import com.example.eshopay_be.dto.ProductDTO;
 import com.example.eshopay_be.dto.ProductPhotoDTO;
@@ -30,6 +34,7 @@ import com.example.eshopay_be.util.ErrorMessage;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+// import lombok.Value;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +45,8 @@ public class ProductServiceImpl implements ProductsService {
     private final ProductPhotoRepository productPhotoRepository;
 
     private final FileStorageService fileStorageService;
+    @Value("${app.endpoint-file-view}")
+    private String endpointFileView;
 
     public static ProductDTO mapToDto(Products products) {
 
@@ -60,17 +67,32 @@ public class ProductServiceImpl implements ProductsService {
     }
 
     @Override
-    public ApiResponsePagination<ProductDTO> findAll(Integer size, Integer current) {
+    public ApiResponsePagination<ProductDTO> findAll(Integer size, Integer current, String keyword, String category,
+            String sortingDirection) {
 
-        Pageable pageable = PageRequest.of(current - 1, size, Sort.by("productId").ascending());
-        Page<Products> pageResult = productsRepository.findAll(pageable);
+        // searching
+        Specification<Products> specs = ProductItemSpec.searchSpecification(keyword, category);
+
+        // Sorting
+        Sort sort = sortingDirection.equalsIgnoreCase("desc") ? Sort.by("productId").descending()
+                : Sort.by("productId").ascending();
+
+        // get all data
+        Pageable pageable = PageRequest.of(current - 1, size, sort);
+        Page<Products> pageResult = productsRepository.findAll(specs, pageable);
         List<ProductDTO> productDTOs = pageResult.getContent().stream().map(ProductServiceImpl::mapToDto)
                 .collect(Collectors.toList());
+
         Pagination pagination = new Pagination();
         pagination.setCurrent(current);
         pagination.setSize(size);
         pagination.setTotal(pageResult.getTotalElements());
         pagination.setTotalPages(pageResult.getTotalPages());
+        pagination.setFilter(
+                Filter.builder()
+                        .keyword(keyword)
+                        .category(category)
+                        .build());
 
         ApiResponsePagination<ProductDTO> response = new ApiResponsePagination<>();
         response.setMessage("success get data");
@@ -138,7 +160,7 @@ public class ProductServiceImpl implements ProductsService {
                     .fileName(storeFileName)
                     .fileSize(file.getSize())
                     .fileType(file.getContentType())
-                    .fileUrl("localhost:8989/api/product/view/" + storeFileName)
+                    .fileUrl(endpointFileView + storeFileName)
                     .products(products)
                     .build();
 

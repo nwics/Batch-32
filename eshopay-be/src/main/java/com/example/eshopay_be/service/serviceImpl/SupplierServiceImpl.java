@@ -44,7 +44,8 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public ApiResponsePagination<SupplierDTO> findAll(Integer size, Integer current) {
+    public ApiResponsePagination<SupplierDTO> findAll(Integer size, Integer current, String keyword,
+            String categoryName, String sortingDirection) {
 
         Pageable pageable = PageRequest.of(current - 1, size, Sort.by("supplierId").ascending());
         Page<Suppliers> pageResult = suppliersRepository.findAll(pageable);

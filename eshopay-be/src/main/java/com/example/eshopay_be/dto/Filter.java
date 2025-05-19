@@ -11,11 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Pagination {
+public class Filter {
 
-    private Integer size;
-    private Long total;
-    private Integer totalPages;
-    private Integer current;
-    private Filter filter;
+    private String keyword;
+    // private String productName;
+    private String category;
+
 }

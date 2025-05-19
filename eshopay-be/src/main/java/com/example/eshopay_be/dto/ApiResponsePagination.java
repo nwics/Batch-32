@@ -21,4 +21,5 @@ public class ApiResponsePagination<T> {
     private int statusCode;
     private List<T> data;
     private Pagination page;
+
 }
