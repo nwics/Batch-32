@@ -14,7 +14,7 @@ import lombok.Setter;
 public abstract class BaseEntity {
 
     @Column(name = "created_date", nullable = false)
-    private Instant createDate = Instant.now();
+    private LocalDateTime createDate;
     @Column(name = "modified_date")
     private LocalDateTime modifiedDate;
 

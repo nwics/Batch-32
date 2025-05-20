@@ -9,4 +9,5 @@ import com.example.eshopay_be.model.Products;
 @Repository
 public interface ProductsRepository extends JpaRepository<Products, Long>, JpaSpecificationExecutor<Products> {
 
+    Products findByProductId(Long productId);
 }

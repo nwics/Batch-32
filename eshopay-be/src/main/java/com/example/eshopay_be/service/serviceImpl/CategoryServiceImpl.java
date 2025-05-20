@@ -22,7 +22,6 @@ import com.example.eshopay_be.service.CategoryService;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.var;
 import lombok.extern.slf4j.Slf4j;
 
 @Service

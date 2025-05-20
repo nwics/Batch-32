@@ -1,5 +1,7 @@
 package com.example.eshopay_be.dto;
 
+import java.math.BigDecimal;
+
 import com.example.eshopay_be.model.Category;
 import com.example.eshopay_be.model.Suppliers;
 
@@ -17,7 +19,7 @@ public class ProductDTO {
     private Long productId;
     private String productName;
     private String quantityPerUnit;
-    private Double unitPrice;
+    private BigDecimal unitPrice;
     private Integer unitsInStock;
     private Integer unitsOnOrder;
     private Integer reorderLevel;

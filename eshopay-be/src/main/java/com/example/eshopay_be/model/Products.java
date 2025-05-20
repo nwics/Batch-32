@@ -1,5 +1,7 @@
 package com.example.eshopay_be.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,7 +36,7 @@ public class Products extends BaseEntity {
     private String quantityPerUnit;
 
     @Column(name = "unit_price")
-    private Double unitPrice;
+    private BigDecimal unitPrice;
 
     @Column(name = "units_in_stock")
     private Integer unitsInStock;
