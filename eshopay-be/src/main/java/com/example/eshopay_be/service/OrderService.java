@@ -6,10 +6,9 @@ import com.example.eshopay_be.dto.CheckoutReqDTO;
 import com.example.eshopay_be.dto.OrderDTO;
 
 public interface OrderService {
-    OrderDTO createOrder(Long cartId, CheckoutReqDTO checkoutReqDTO);
+    OrderDTO createOrder(Long userId, CheckoutReqDTO checkoutReqDTO);
 
     OrderDTO getOrderById(Long orderId);
 
     List<OrderDTO> getOrdersByUserId(Long userId);
-
 }

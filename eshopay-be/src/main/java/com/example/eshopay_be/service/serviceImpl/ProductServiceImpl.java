@@ -36,6 +36,7 @@ import com.example.eshopay_be.model.Suppliers;
 import com.example.eshopay_be.service.FileStorageService;
 import com.example.eshopay_be.service.ProductsService;
 import com.example.eshopay_be.util.ErrorMessage;
+import com.example.eshopay_be.util.SuccessMessage;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +77,10 @@ public class ProductServiceImpl implements ProductsService {
         public ApiResponsePagination<ProductDTO> findAll(Integer size, Integer current, String keyword, String category,
                         String sortingDirection) {
 
-                // searching
+                /*
+                 * Search
+                 * https://www.baeldung.com/rest-api-search-language-spring-data-specifications
+                 */
                 Specification<Products> specs = ProductItemSpec.searchSpecification(keyword, category);
 
                 // Sorting
@@ -101,7 +105,7 @@ public class ProductServiceImpl implements ProductsService {
                                                 .build());
 
                 ApiResponsePagination<ProductDTO> response = new ApiResponsePagination<>();
-                response.setMessage("success get data");
+                response.setMessage(SuccessMessage.FindAll.FIND_DATA);
                 response.setStatusCode(200);
                 response.setData(productDTOs);
                 response.setTimestamp(LocalDateTime.now());
@@ -162,7 +166,8 @@ public class ProductServiceImpl implements ProductsService {
 
                 try {
                         Products products = productsRepository.findById(productId)
-                                        .orElseThrow(() -> new RuntimeException("Produk tidak ada"));
+                                        .orElseThrow(() -> new ProductNotFoundException(
+                                                        ErrorMessage.Product.PRODUCT_NOT_FOUND));
 
                         String storeFileName = fileStorageService.storeFileWithRandomName(file);
 
@@ -190,7 +195,8 @@ public class ProductServiceImpl implements ProductsService {
                 // throw new UnsupportedOperationException("Unimplemented method
                 // 'findProductImagesById'");
                 Products products = productsRepository.findById(productId)
-                                .orElseThrow(() -> new RuntimeException("produk tidak ada"));
+                                .orElseThrow(() -> new ProductNotFoundException(
+                                                ErrorMessage.Product.PRODUCT_NOT_FOUND));
 
                 List<ProductImages> images = productPhotoRepository.findByProducts(products);
                 return images.stream().map(image -> ProductPhotoDTO.builder()
@@ -207,15 +213,15 @@ public class ProductServiceImpl implements ProductsService {
         @Override
         @Transactional
         public void updateProductStock(Long productId, Integer quantity) {
-                // TODO Auto-generated method stub
-                // throw new UnsupportedOperationException("Unimplemented method
-                // 'updateProductStock'");
+
                 Products products = productsRepository.findById(productId)
-                                .orElseThrow(() -> new ResourceNotFoundException("product id not found " + productId));
+                                .orElseThrow(() -> new ProductNotFoundException(
+                                                ErrorMessage.Product.PRODUCT_NOT_FOUND + productId));
 
                 int newStock = products.getUnitsInStock() - quantity;
                 if (newStock < 0) {
-                        throw new InsunfficientStockProduct("insunficcient for stock " + productId);
+                        throw new ProductNotFoundException(
+                                        ErrorMessage.Product.PRODUCT_STOCK_INSUNFFICIENT + productId);
                 }
                 products.setUnitsInStock(newStock);
                 productsRepository.save(products);

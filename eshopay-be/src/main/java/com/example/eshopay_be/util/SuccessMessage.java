@@ -26,6 +26,22 @@ public class SuccessMessage {
 
     }
 
+    public static class Cart {
+        public static final String GET_CART_USER = "success get cart by user id";
+        public static final String CREATE_CART_USER = "success create cart by user id";
+        public static final String ADD_CART_ITEM = "success add cart item by cart id";
+        public static final String UPDATE_CART_ITEM = "success update cart item";
+        public static final String CLEAN_CART_ITEM = "success clean cart item";
+        public static final String REMOVE_CART_ITEM = "success remove cart item";
+    }
+
+    public static class Order {
+        public static final String CREATE_ORDER_USER = "success create order by user id";
+        public static final String GET_ORDER_ID = "success get order by id";
+        public static final String GET_ORDER_BY_USER = "success get order by user id";
+
+    }
+
     public static class UploadImage {
         public static final String UPLOAD_IMAGE = "success upload image";
     }
@@ -50,4 +66,5 @@ public class SuccessMessage {
     public static class Delete {
         public static final String DELETE = "success delete data";
     }
+
 }

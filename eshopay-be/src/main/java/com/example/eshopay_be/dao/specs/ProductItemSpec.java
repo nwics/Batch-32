@@ -22,7 +22,7 @@ public class ProductItemSpec {
             // join with category
             Join<Products, Category> categoryJoin = root.join("category");
 
-            // create the predicate base on category name
+            // create base category name
             return criteriaBuilder.like(
                     criteriaBuilder.lower(categoryJoin.get("categoryName")), "%" + categoryName.toLowerCase() + "%");
         };

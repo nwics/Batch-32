@@ -7,6 +7,7 @@ import com.example.eshopay_be.dto.ApiResponse;
 import com.example.eshopay_be.dto.CartDTO;
 import com.example.eshopay_be.service.CartService;
 import com.example.eshopay_be.service.serviceImpl.CartServiceImpl;
+import com.example.eshopay_be.util.SuccessMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +35,8 @@ public class ApiCartController {
 
                 CartDTO response = cartService.getCartByUserId(userId);
                 ApiResponse<?> apiResponse = new ApiResponse<>(
-                                "success get cart id", response, LocalDateTime.now(), HttpStatus.OK.value());
+                                SuccessMessage.Cart.GET_CART_USER, response, LocalDateTime.now(),
+                                SuccessMessage.Http.OK);
 
                 return ResponseEntity.ok(apiResponse);
         }
@@ -43,7 +45,8 @@ public class ApiCartController {
         public ResponseEntity<ApiResponse<?>> addCart(@PathVariable Long userId) {
                 CartDTO response = cartService.createCart(userId);
                 ApiResponse<?> apiResponse = new ApiResponse<>(
-                                "success add cart by userId", response, LocalDateTime.now(), HttpStatus.OK.value());
+                                SuccessMessage.Cart.CREATE_CART_USER, response, LocalDateTime.now(),
+                                SuccessMessage.Http.CREATED);
                 return ResponseEntity.ok(apiResponse);
         }
 
@@ -53,7 +56,8 @@ public class ApiCartController {
 
                 CartDTO response = cartService.addItemToCart(cartId, productId, quantity);
                 ApiResponse<?> apiResponse = new ApiResponse<>(
-                                "success add item to cart", response, LocalDateTime.now(), HttpStatus.OK.value());
+                                SuccessMessage.Cart.ADD_CART_ITEM, response, LocalDateTime.now(),
+                                SuccessMessage.Http.CREATED);
                 return ResponseEntity.ok(apiResponse);
 
         }
@@ -67,7 +71,8 @@ public class ApiCartController {
                 CartDTO response = cartService.updateCartItem(cartId, productId, quantity);
 
                 ApiResponse<?> apiResponse = new ApiResponse<>(
-                                "success update cart item", response, LocalDateTime.now(), HttpStatus.OK.value());
+                                SuccessMessage.Cart.UPDATE_CART_ITEM, response, LocalDateTime.now(),
+                                HttpStatus.OK.value());
 
                 return ResponseEntity.ok(apiResponse);
         }
@@ -75,23 +80,25 @@ public class ApiCartController {
         @DeleteMapping("/{cartId}/{productId}/remove")
         public ResponseEntity<ApiResponse<?>> removeCartItem(
                         @PathVariable Long cartId,
-                        @PathVariable Long productId, @PathVariable Integer quantity) {
+                        @PathVariable Long productId) {
 
-                cartService.removeCart(cartId, productId, quantity);
+                cartService.removeCartItem(cartId, productId);
 
                 ApiResponse<?> apiResponse = new ApiResponse<>(
-                                "success remove cart item", null, LocalDateTime.now(), HttpStatus.OK.value());
+                                SuccessMessage.Cart.REMOVE_CART_ITEM, null, LocalDateTime.now(), HttpStatus.OK.value());
 
                 return ResponseEntity.ok(apiResponse);
         }
 
-        @PutMapping("/{cartId}/clean")
-        public ResponseEntity<ApiResponse<?>> cleanCart(@PathVariable Long cartId, @RequestParam Long productId) {
-                cartService.cleanCart(cartId, productId);
+        // @PutMapping("/{cartId}/clean")
+        // public ResponseEntity<ApiResponse<?>> cleanCart(@PathVariable Long cartId,
+        // @RequestParam Long productId) {
+        // cartService.cleanCart(cartId, productId);
 
-                ApiResponse<?> apiResponse = new ApiResponse<>(
-                                "success clean cart", null, LocalDateTime.now(), HttpStatus.OK.value());
-                return ResponseEntity.ok(apiResponse);
+        // ApiResponse<?> apiResponse = new ApiResponse<>(
+        // SuccessMessage.Cart.CLEAN_CART_ITEM, null, LocalDateTime.now(),
+        // SuccessMessage.Http.OK);
+        // return ResponseEntity.ok(apiResponse);
 
-        }
+        // }
 }

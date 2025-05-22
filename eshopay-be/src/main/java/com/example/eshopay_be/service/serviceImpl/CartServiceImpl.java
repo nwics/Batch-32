@@ -9,18 +9,23 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.eshopay_be.dao.CartItemRepository;
 import com.example.eshopay_be.dao.CartRepository;
 import com.example.eshopay_be.dao.ProductsRepository;
 import com.example.eshopay_be.dto.CartDTO;
 import com.example.eshopay_be.dto.CartItemDTO;
+import com.example.eshopay_be.exception.CartItemNotFoundException;
+import com.example.eshopay_be.exception.CartNotFoundException;
+import com.example.eshopay_be.exception.ProductNotFoundException;
 import com.example.eshopay_be.model.CartItem;
 import com.example.eshopay_be.model.CartItemId;
 import com.example.eshopay_be.model.Carts;
 import com.example.eshopay_be.model.Products;
 import com.example.eshopay_be.model.Users;
 import com.example.eshopay_be.service.CartService;
+import com.example.eshopay_be.util.ErrorMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,14 +47,14 @@ public class CartServiceImpl implements CartService {
             dto.setCartId(item.getId().getCartId());
             dto.setProductId(item.getId().getProductId());
             dto.setQuantity(item.getQuantity());
-            dto.setDiscount(item.getDiscount());
+            dto.setDiscount(item.getDiscount() != null ? item.getDiscount() : BigDecimal.ZERO);
             dto.setSubTotal(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
             dto.setProductDTO(ProductServiceImpl.mapToDto(item.getProducts()));
             return dto;
         }).collect(Collectors.toList());
-
+        Integer totalItems = carts.getCartItems().stream().mapToInt(CartItem::getQuantity).sum();
         return new CartDTO(
-                carts.getCartId(), carts.getUserId(), itemDTOs, null);
+                carts.getCartId(), carts.getUserId(), itemDTOs, totalItems);
     }
 
     public static Carts mapToModel(CartDTO cartDTO) {
@@ -82,24 +87,26 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CartDTO getCartByUserId(Long userId) {
         try {
             Carts foundCarts = cartRepository.findByUserId(userId);
             if (foundCarts == null) {
-                throw new RuntimeException("No cart found for user ID: " + userId);
+                throw new CartNotFoundException(ErrorMessage.Cart.CART_NOT_FOUND + userId);
             }
             return mapToDTO(foundCarts);
         } catch (Exception e) {
-            throw new RuntimeException("error to get carts id : " + e.getMessage());
+            throw new CartNotFoundException(e.getMessage());
         }
     }
 
     @Override
+    @Transactional
     public CartDTO createCart(Long userId) {
         try {
             Carts foundCarts = cartRepository.findByUserId(userId);
             if (foundCarts != null) {
-                throw new RuntimeException("cart by user id alredy exist");
+                throw new CartNotFoundException(ErrorMessage.Cart.CART_ALREADY_EXIST);
             }
 
             Carts newCarts = new Carts();
@@ -111,26 +118,27 @@ public class CartServiceImpl implements CartService {
             return mapToDTO(saved);
 
         } catch (Exception e) {
-            throw new RuntimeException("error to create cart " + e.getMessage());
+            throw new CartNotFoundException(e.getMessage());
         }
     }
 
     @Override
+    @Transactional
     public CartDTO addItemToCart(Long cartId, Long productId, Integer quantity) {
 
         try {
             Carts foundCarts = cartRepository.findByCartId(cartId);
             if (foundCarts == null) {
-                throw new RuntimeException("cart by cart id not found");
+                throw new CartNotFoundException(ErrorMessage.Cart.CART_NOT_FOUND);
             }
 
             Products foundProducts = productsRepository.findByProductId(productId);
             if (foundProducts == null) {
                 Optional<Products> regularProduct = productsRepository.findById(productId);
                 if (!regularProduct.isPresent()) {
-                    throw new RuntimeException("product does not exist in database");
+                    throw new ProductNotFoundException(ErrorMessage.Product.PRODUCT_NOT_EXIST);
                 }
-                throw new RuntimeException("product is marked as deleted");
+                throw new ProductNotFoundException(ErrorMessage.Product.PRODUCT_DELETED);
             }
 
             CartItemId itemId = new CartItemId();
@@ -142,6 +150,7 @@ public class CartServiceImpl implements CartService {
             if (existingItem.isPresent()) {
                 cartItem = existingItem.get();
                 cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                cartItem.setDiscount(BigDecimal.valueOf(0.15));
             } else {
                 cartItem = new CartItem();
                 cartItem.setId(itemId);
@@ -150,24 +159,27 @@ public class CartServiceImpl implements CartService {
                 cartItem.setQuantity(quantity);
                 cartItem.setCreateDate(LocalDateTime.now());
                 cartItem.setUnitPrice(foundProducts.getUnitPrice());
+                cartItem.setDiscount(BigDecimal.valueOf(0.15));
 
             }
             cartItemRepository.save(cartItem);
+            cartItemRepository.flush();
 
-            // Carts updateCart = cartRepository.findByCartId(foundCarts.getCartId());
-            return mapToDTO(foundCarts);
+            Carts updateCart = cartRepository.findByCartId(foundCarts.getCartId());
+            return mapToDTO(updateCart);
 
         } catch (Exception e) {
-            throw new RuntimeException("error add cart item : " + e.getMessage());
+            throw new CartNotFoundException(e.getMessage());
         }
     }
 
     @Override
+    @Transactional
     public CartDTO updateCartItem(Long cartId, Long productId, Integer quantity) {
         CartItemId itemId = new CartItemId(cartId, productId);
         Optional<CartItem> foundCartItem = cartItemRepository.findById(itemId);
         if (!foundCartItem.isPresent()) {
-            throw new RuntimeException("cart item not found");
+            throw new CartNotFoundException(ErrorMessage.Cart.CART_NOT_FOUND);
         }
         CartItem item = foundCartItem.get();
         item.setQuantity(quantity);
@@ -177,25 +189,27 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void removeCart(Long cartId, Long productId, Integer quantity) {
+    public void removeCartItem(Long cartId, Long productId) {
 
         CartItemId itemId = new CartItemId(cartId, productId);
         CartItem item = cartItemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item not found"));
+                .orElseThrow(() -> new CartItemNotFoundException(ErrorMessage.CartItem.CART_ITEM_NOT_FOUND));
 
-        item.setQuantity(quantity);
-        cartItemRepository.save(item);
+        cartItemRepository.delete(item);
+        // item.setQuantity(quantity);
+        // cartItemRepository.save(item);
         // return mapToDTO(item.getCarts());
     }
 
-    @Override
-    public void cleanCart(Long cartId, Long productId) {
-        CartItemId itemId = new CartItemId(cartId, productId);
-        Optional<CartItem> foundCartItem = cartItemRepository.findById(itemId);
-        if (!foundCartItem.isPresent()) {
-            throw new RuntimeException("cart item not found");
-        }
-        cartItemRepository.delete(foundCartItem.get());
-    }
+    // @Override
+    // public void cleanCart(Long cartId, Long productId) {
+    // CartItemId itemId = new CartItemId(cartId, productId);
+    // Optional<CartItem> foundCartItem = cartItemRepository.findById(itemId);
+    // if (!foundCartItem.isPresent()) {
+    // throw new
+    // CartItemNotFoundException(ErrorMessage.CartItem.CART_ITEM_NOT_FOUND);
+    // }
+    // cartItemRepository.delete(foundCartItem.get());
+    // }
 
 }

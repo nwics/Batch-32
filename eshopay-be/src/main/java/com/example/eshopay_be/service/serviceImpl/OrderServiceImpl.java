@@ -16,17 +16,28 @@ import com.example.eshopay_be.dto.CartItemDTO;
 import com.example.eshopay_be.dto.CheckoutReqDTO;
 import com.example.eshopay_be.dto.OrderDTO;
 import com.example.eshopay_be.dto.OrderDetailDTO;
+import com.example.eshopay_be.exception.BankNotFoundException;
+import com.example.eshopay_be.exception.CartNotFoundException;
+import com.example.eshopay_be.exception.EmployeeNotFoundException;
+import com.example.eshopay_be.exception.LocationNotFoundException;
+import com.example.eshopay_be.exception.OrderNotFoundException;
+import com.example.eshopay_be.exception.ProductNotFoundException;
 import com.example.eshopay_be.exception.ResourceNotFoundException;
+import com.example.eshopay_be.exception.ShipperNotFoundException;
+import com.example.eshopay_be.exception.UserNotFoundException;
+import com.example.eshopay_be.model.Bank;
 import com.example.eshopay_be.model.Employee;
 import com.example.eshopay_be.model.Location;
 import com.example.eshopay_be.model.OrderDetails;
 import com.example.eshopay_be.model.OrderDetailsId;
 import com.example.eshopay_be.model.Orders;
+import com.example.eshopay_be.model.Products;
 import com.example.eshopay_be.model.Shippers;
 import com.example.eshopay_be.model.Users;
 import com.example.eshopay_be.service.CartService;
 import com.example.eshopay_be.service.OrderService;
 import com.example.eshopay_be.service.ProductsService;
+import com.example.eshopay_be.util.ErrorMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +55,7 @@ public class OrderServiceImpl implements OrderService {
     private final ShipperRepository shipperRepository;
     private final LocationRepository locationRepository;
     private final EmployeeRepository employeeRepository;
+    private final BankRepository bankRepository;
 
     private OrderDTO mapToDTO(Orders order) {
         OrderDTO orderDTO = new OrderDTO();
@@ -85,29 +97,43 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDTO createOrder(Long cartId, CheckoutReqDTO checkoutReqDTO) {
+    @Transactional
+    public OrderDTO createOrder(Long userId, CheckoutReqDTO checkoutReqDTO) {
         try {
-            CartDTO cart = cartService.getCartByUserId(cartId);
+            CartDTO cart = cartService.getCartByUserId(userId);
             if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
-                throw new RuntimeException("Cart is empty or does not exist for user ID: " + cartId);
+                throw new CartNotFoundException(ErrorMessage.Cart.CART_EMPTY + userId);
             }
 
-            Users users = usersRepository.findById(checkoutReqDTO.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("users not found " + checkoutReqDTO.getUserId()));
+            Users users = usersRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException(ErrorMessage.User.USER_NOT_FOUND + userId));
             Shippers shippers = shipperRepository.findById(checkoutReqDTO.getShipperId()).orElseThrow(
-                    () -> new ResourceNotFoundException("shippers not found " + checkoutReqDTO.getShipperId()));
+                    () -> new ShipperNotFoundException(
+                            ErrorMessage.shipper.SHIPPER_NOT_FOUND + checkoutReqDTO.getShipperId()));
             Location location = locationRepository.findById(checkoutReqDTO.getLocationId()).orElseThrow(
-                    () -> new ResourceNotFoundException("location not found " + checkoutReqDTO.getLocationId()));
+                    () -> new LocationNotFoundException(
+                            ErrorMessage.Location.LOCATION_NOT_FOUND + checkoutReqDTO.getLocationId()));
             Employee employee = employeeRepository.findById(checkoutReqDTO.getEmployeeId()).orElseThrow(
-                    () -> new ResourceNotFoundException("employee not found " + checkoutReqDTO.getLocationId()));
+                    () -> new EmployeeNotFoundException(
+                            ErrorMessage.Employee.EMPLOYEE_NOT_FOUND + checkoutReqDTO.getLocationId()));
+            Bank bank = bankRepository.findById(checkoutReqDTO.getBankCode())
+                    .orElseThrow(() -> new BankNotFoundException(
+                            ErrorMessage.Bank.BANK_NOT_FOUND + checkoutReqDTO.getBankCode()));
+
             Orders orders = new Orders();
             orders.setUsers(users);
             orders.setShippers(shippers);
             orders.setEmployee(employee);
             orders.setLocation(location);
+            orders.setBank(bank);
             orders.setOrderDate(LocalDateTime.now());
             orders.setRequiredDate(LocalDateTime.now().plusDays(3));
-            orders.setShipName(checkoutReqDTO.getShipName());
+            // orders.setShipName(checkoutReqDTO.getShipName());
+            // orders.setCreateDate(LocalDateTime.now());
+            // orders.setTransacDate(LocalDateTime.now());
+            // String noTransac = "XXX"+userId+"000";
+            // orders.setTransacNo(noTransac);
+            // orders.setShippedDate(LocalDateTime.now().plusHours(7));
             orders.setPaymentType(checkoutReqDTO.getPaymentType());
 
             BigDecimal totalDiscount = BigDecimal.ZERO;
@@ -124,7 +150,8 @@ public class OrderServiceImpl implements OrderService {
 
                 orderDetails.setOrders(saveOrders);
                 orderDetails.setProducts(productsRepository.findById(cartItemDTO.getProductId()).orElseThrow(
-                        () -> new ResourceNotFoundException("product not found " + cartItemDTO.getProductId())));
+                        () -> new ProductNotFoundException(
+                                ErrorMessage.Product.PRODUCT_NOT_FOUND + cartItemDTO.getProductId())));
                 orderDetails.setUnitPrice(cartItemDTO.getProductDTO().getUnitPrice());
                 orderDetails
                         .setDiscount(cartItemDTO.getDiscount() != null ? cartItemDTO.getDiscount() : BigDecimal.ZERO);
@@ -134,7 +161,8 @@ public class OrderServiceImpl implements OrderService {
 
                 BigDecimal unitPrice = cartItemDTO.getProductDTO().getUnitPrice();
                 if (unitPrice == null) {
-                    throw new RuntimeException("unit price is null product id :" + cartItemDTO.getProductId());
+                    throw new ProductNotFoundException(
+                            ErrorMessage.Product.PRODUCT_UNIT_PRICE_NULL + cartItemDTO.getProductId());
                 }
 
                 BigDecimal discount = cartItemDTO.getDiscount() != null ? cartItemDTO.getDiscount() : BigDecimal.ZERO;
@@ -153,25 +181,24 @@ public class OrderServiceImpl implements OrderService {
 
             return mapToDTO(saveOrders);
         } catch (Exception e) {
-            // TODO: handle exception
-            throw new RuntimeException("error to create orders " + e.getMessage());
+
+            throw new OrderNotFoundException(e.getMessage());
         }
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderDTO getOrderById(Long orderId) {
 
         Orders orders = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("orders not found " + orderId));
+                .orElseThrow(() -> new OrderNotFoundException(ErrorMessage.Order.ORDER_NOT_FOUND + orderId));
         return mapToDTO(orders);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<OrderDTO> getOrdersByUserId(Long userId) {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method
-        // 'getOrdersByUserId'");
+
         List<Orders> orders = orderRepository.findByUsersUserId(userId);
         return orders.stream().map(this::mapToDTO).collect(Collectors.toList());
     }

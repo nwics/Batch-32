@@ -8,6 +8,7 @@ import com.example.eshopay_be.dto.CheckoutReqDTO;
 import com.example.eshopay_be.dto.OrderDTO;
 import com.example.eshopay_be.service.OrderService;
 import com.example.eshopay_be.service.serviceImpl.OrderServiceImpl;
+import com.example.eshopay_be.util.SuccessMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,12 +30,12 @@ public class ApiOrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/add/{cartId}")
-    public ResponseEntity<ApiResponse<?>> createOrder(@PathVariable Long cartId,
+    @PostMapping("/add/{userId}")
+    public ResponseEntity<ApiResponse<?>> createOrder(@PathVariable Long userId,
             @RequestBody CheckoutReqDTO checkoutReqDTO) {
-        OrderDTO createOrder = orderService.createOrder(cartId, checkoutReqDTO);
+        OrderDTO createOrder = orderService.createOrder(userId, checkoutReqDTO);
         ApiResponse<?> apiResponse = new ApiResponse<>(
-                "success create orders", createOrder, LocalDateTime.now(), HttpStatus.OK.value());
+                SuccessMessage.Order.CREATE_ORDER_USER, createOrder, LocalDateTime.now(), HttpStatus.OK.value());
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -42,7 +43,7 @@ public class ApiOrderController {
     public ResponseEntity<ApiResponse<?>> getOrderById(@PathVariable Long orderId) {
         OrderDTO order = orderService.getOrderById(orderId);
         ApiResponse<?> apiResponse = new ApiResponse<>(
-                "success get order", order, LocalDateTime.now(), HttpStatus.OK.value());
+                SuccessMessage.Order.GET_ORDER_ID, order, LocalDateTime.now(), HttpStatus.OK.value());
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -50,7 +51,7 @@ public class ApiOrderController {
     public ResponseEntity<ApiResponse<?>> getOrderByUserId(@PathVariable Long userId) {
         List<OrderDTO> response = orderService.getOrdersByUserId(userId);
         ApiResponse<?> apiResponse = new ApiResponse<>(
-                "Success get order by user", response, LocalDateTime.now(), HttpStatus.OK.value());
+                SuccessMessage.Order.GET_ORDER_BY_USER, response, LocalDateTime.now(), HttpStatus.OK.value());
         return ResponseEntity.ok(apiResponse);
     }
 
